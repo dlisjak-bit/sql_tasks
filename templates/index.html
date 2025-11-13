@@ -79,10 +79,15 @@
 
 <h2>SQL Runner</h2>
 
+
 <div class="layout">
 
     <div class="left-pane">
         <section>
+            <h5> Left panel is scrollable. Please upload CSVs and use this app to parse any given single SQL block provided by the LLM 
+    or the writer. </h5>
+    <h5>Make sure to reset the files if the LLM is updating the tables (when creating a table, a new .csv file gets created).
+The files are stored in sql_tasks/data.</h5>  
     <h4>Upload CSVs</h4>
     <input type="file" id="fileUpload" multiple>
     <button onclick="uploadFiles()">Upload</button>
@@ -96,6 +101,7 @@
 
         <section>
             <h4>Raw LLM JSON</h4>
+            <h5>This only works on tool calls sql_execution_execute_sql</h5>  
             <textarea id="raw"></textarea>
             <button onclick="runLLM()">Run LLM SQL</button>
         </section>
