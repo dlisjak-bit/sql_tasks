@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQL Runner</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 32px;      /* NEW */
+        }
+
+        .layout {
+            padding: 12px;      /* NEW */
+        }
+        .left-pane, .right-pane {
+            padding: 12px;      /* NEW */
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.2fr 2fr;
+            gap: 2rem;
+            height: calc(100vh - 80px);
+        }
+        .left-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;
+        }
+        #raw, #golden { height: 200px; }
+        textarea { font-family: monospace; }
+        .right-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+        }
+        #editor {
+            flex: 1;
+            border: 1px solid #444;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        #parsed_sql_container { height: 50%; display: flex; flex-direction: column; gap: 1rem; }
+        #output {
+            height: 50%;
+            white-space: pre;
+            background: #111;
+            color: #eee;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow: auto;
+            font-family: monospace;
+        }
+        #editor {
+    flex: 1;
+    min-height: 0;         /* CRITICAL: allows shrink and scrolling */
+    overflow: auto;        /* allow scroll inside */
+    border: 1px solid #444;
+    border-radius: 6px;
+}
+
+.cm-editor {
+    height: 100%;          /* make CodeMirror fill the editor box */
+    overflow: auto;        /* ensure CodeMirror scrolls */
+}
+
+.cm-scroller {
+    overflow: auto !important;  /* ensure scroll inside CM */
+}
+
+    </style>
+</head>
+
+<body>
+
+<h2>SQL Runner</h2>
+
+<div class="layout">
+
+    <div class="left-pane">
+        <section>
+    <h4>Upload CSVs</h4>
+    <input type="file" id="fileUpload" multiple>
+    <button onclick="uploadFiles()">Upload</button>
+
+    <div id="tableList" style="margin-top:1rem; font-size:0.9rem;">
+        <strong>Loaded tables:</strong>
+        <ul id="tableListItems"></ul>
+    </div>
+</section>
+
+
+        <section>
+            <h4>Raw LLM JSON</h4>
+            <textarea id="raw"></textarea>
+            <button onclick="runLLM()">Run LLM SQL</button>
+        </section>
+
+        <section>
+            <h4>Golden Response SQL</h4>
+            <textarea id="golden"></textarea>
+            <button onclick="runGolden()">Run Golden SQL</button>
+        </section>
+<!-- 
+        <section>
+            <h4>Select Active CSV</h4>
+            <select id="active">
+                {% for f in csvs %}
+                    <option value="{{f}}">{{f}}</option>
+                {% endfor %}
+            </select>
+        </section> -->
+
+        <section style="margin-top: 2rem;">
+            <h4 style="color:#ff4f4f;">Reset Filesystem</h4>
+            <button onclick="resetFS()" style="background:#ff4f4f;color:white;">
+                Delete All CSV Files
+            </button>
+        </section>
+    </div>
+
+    <div class="right-pane">
+        <section id="parsed_sql_container">
+            <h4>Parsed SQL (editable)</h4>
+            <div id="editor"></div>
+            <button onclick="rerunParsed()">Rerun Parsed SQL</button>
+        </section>
+
+        <section>
+            <h4>Output</h4>
+            <div id="output"></div>
+        </section>
+    </div>
+
+</div>
+
+<!-- Load your JS module -->
+<script type="module" src="/static/editor.js"></script>
+
+</body>
+</html>
