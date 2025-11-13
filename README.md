@@ -10,8 +10,8 @@ edit SQL interactively, and inspect output — all in one page.
 
 ### 1. Clone & enter the project
 ```bash
-git clone <your-repo-url>
-cd <project-folder>
+git clone https://github.com/dlisjak-bit/sql_tasks.git
+cd sql_tasks
 ```
 ### 2. Create a virtual environment
 
