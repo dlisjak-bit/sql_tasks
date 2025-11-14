@@ -1,7 +1,7 @@
 # SQL Runner Web App
 
-A lightweight browser SQL playground powered by Flask + DuckDB + CodeMirror.
-You can upload CSVs, turn them into DuckDB tables, run SQL, parse LLM JSON,
+A lightweight browser SQL playground powered by Flask + SQLite + CodeMirror.
+You can upload CSVs, turn them into SQLite tables, run SQL, parse LLM JSON,
 edit SQL interactively, and inspect output — all in one page.
 
 ---
