@@ -136,8 +136,8 @@ def run():
 
 
     try:
-        # Case 1 — last statement is SELECT
-        if last_stmt.lower().startswith("select"):
+        # Case 1 — last statement is SELECT or WITH (CTE)
+        if last_stmt.lower().startswith("select") or last_stmt.lower().startswith("with"):
             # Execute all non-select statements
             if len(statements) > 1:
                 non_select_block = ";".join(statements[:-1]) + ";"
