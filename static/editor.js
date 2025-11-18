@@ -2,8 +2,11 @@ import { EditorView, keymap, highlightActiveLine }
     from "https://esm.sh/@codemirror/view@6";
 import { EditorState } from "https://esm.sh/@codemirror/state@6";
 import { defaultKeymap } from "https://esm.sh/@codemirror/commands@6";
+import { history, historyKeymap } 
+    from "https://esm.sh/@codemirror/commands@6";
 import { sql } from "https://esm.sh/@codemirror/lang-sql@6";
 import { oneDark } from "https://esm.sh/@codemirror/theme-one-dark";
+import { lineNumbers } from "https://esm.sh/@codemirror/view";
 
 let editorView;
 
@@ -15,8 +18,13 @@ function createEditor(text = "") {
             extensions: [
                 oneDark,
                 sql(),
+                lineNumbers(),          // ⬅ NEW
+                history(),              // ⬅ NEW
                 highlightActiveLine(),
-                keymap.of(defaultKeymap),
+                keymap.of([
+                    ...defaultKeymap,
+                    ...historyKeymap     // ⬅ NEW (enables Cmd-Z, Cmd-Shift-Z)
+                ]),
                 EditorView.lineWrapping
             ]
         }),
@@ -58,7 +66,7 @@ window.runLLM = async function () {
     setEditorText(data.sql);
     document.getElementById("output").innerText = data.output;
 
-    refreshTableList();   // NEW
+    refreshTableList();
 };
 
 window.runGolden = async function () {
@@ -71,7 +79,7 @@ window.runGolden = async function () {
     setEditorText(data.sql);
     document.getElementById("output").innerText = data.output;
 
-    refreshTableList();   // NEW
+    refreshTableList();
 };
 
 
@@ -93,10 +101,11 @@ window.rerunParsed = async function () {
     setEditorText(data.sql);
     document.getElementById("output").innerText = data.output;
 
-    refreshTableList();   // NEW
+    refreshTableList();
 };
 
 
+// Display loaded tables WITH HYPERLINKS
 async function refreshTableList() {
     let res = await fetch("/tables");
     if (!res.ok) return;
@@ -109,25 +118,11 @@ async function refreshTableList() {
 
     for (let item of data) {
         let li = document.createElement("li");
-        li.textContent = `${item.file} → ${item.table}`;
+        li.innerHTML = `<a href="/csvview/${item.file}" target="_blank">${item.table}</a>`;
+
         ul.appendChild(li);
     }
 }
 
-
 // call on startup
-refreshTableList();
-
-// call after upload
-window.uploadFiles = async function () {
-    let fd = new FormData();
-    for (let f of document.getElementById("fileUpload").files) {
-        fd.append("files", f);
-    }
-    await fetch("/upload", { method: "POST", body: fd });
-
-    await refreshTableList();
-    alert("Uploaded!");
-};
-
 document.addEventListener("DOMContentLoaded", refreshTableList);

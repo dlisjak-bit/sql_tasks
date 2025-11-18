@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+    <title>CSV Viewer – {{ filename }}</title>
+
+    <!-- Pico CSS (dark via data-theme="dark" on html) -->
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@2/css/pico.min.css">
+
+    <!-- PapaParse for robust CSV parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+    <style>
+        body { padding: 20px; }
+
+        h2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .meta {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 90vh;
+            border: 1px solid #444;
+            border-radius: 6px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 4px 8px;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: #111;
+            z-index: 2;
+        }
+
+        tr:nth-child(even) td {
+            background: #181818;
+        }
+
+        tr:hover td {
+            background: #222;
+        }
+    </style>
+</head>
+
+<body>
+<h2>{{ filename }}</h2>
+<div class="meta">Rendered as table (parsed with PapaParse, dark mode).</div>
+
+<div class="container">
+    <table id="csvTable"></table>
+</div>
+
+<script>
+async function loadCSV() {
+    const res = await fetch("/csvraw/{{ filename }}");
+    const text = await res.text();
+
+    // Robust CSV parsing with PapaParse
+    const parsed = Papa.parse(text, {
+        header: true,           // first row as header
+        skipEmptyLines: true,
+        dynamicTyping: false
+    });
+
+    const fields = parsed.meta.fields || [];
+    const rows = parsed.data || [];
+
+    const table = document.getElementById("csvTable");
+    table.innerHTML = "";
+
+    // ---------- Header ----------
+    const thead = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    fields.forEach(f => {
+        const th = document.createElement("th");
+        th.textContent = f;
+        headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    // ---------- Body ----------
+    const tbody = document.createElement("tbody");
+    rows.forEach(row => {
+        const tr = document.createElement("tr");
+        fields.forEach(f => {
+            const td = document.createElement("td");
+            const val = row[f];
+            td.textContent = val === null || val === undefined ? "" : String(val);
+            tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+}
+
+loadCSV();
+</script>
+
+</body>
+</html>

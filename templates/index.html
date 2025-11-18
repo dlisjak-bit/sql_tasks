@@ -93,7 +93,7 @@ The files are stored in sql_tasks/data.</h5>
     <button onclick="uploadFiles()">Upload</button>
 
     <div id="tableList" style="margin-top:1rem; font-size:0.9rem;">
-        <strong>Loaded tables:</strong>
+        <strong>Loaded tables (click for csv viewer):</strong>
         <ul id="tableListItems"></ul>
     </div>
 </section>
@@ -101,16 +101,16 @@ The files are stored in sql_tasks/data.</h5>
 
         <section>
             <h4>Raw LLM JSON</h4>
-            <h5>This only works on tool calls sql_execution_execute_sql</h5>  
+            <h5>Used to parse sql_execution_execute_sql tool calls</h5>  
             <textarea id="raw"></textarea>
             <button onclick="runLLM()">Run LLM SQL</button>
         </section>
 
-        <section>
+        <!-- <section>
             <h4>Golden Response SQL</h4>
             <textarea id="golden"></textarea>
             <button onclick="runGolden()">Run Golden SQL</button>
-        </section>
+        </section> -->
 <!-- 
         <section>
             <h4>Select Active CSV</h4>

@@ -2,9 +2,12 @@ import os
 import json
 import sqlite3
 import pandas as pd
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 
-app = Flask(__name__)
+app = Flask(
+    __name__
+)
+
 DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -14,6 +17,26 @@ DB_PATH = os.path.join(DATA_DIR, "database.sqlite")
 ############################
 # HELPERS
 ############################
+
+from flask import send_from_directory
+
+@app.route("/csvview/<path:filename>")
+def csv_viewer(filename):
+    csv_path = os.path.join(DATA_DIR, filename)
+    if not os.path.exists(csv_path):
+        return f"CSV not found: {filename}", 404
+    return render_template("csv_viewer.html", filename=filename)
+
+@app.route("/csvraw/<path:filename>")
+def csv_raw(filename):
+    csv_path = os.path.join(DATA_DIR, filename)
+    if not os.path.exists(csv_path):
+        return "File not found", 404
+    return send_from_directory(DATA_DIR, filename)
+
+
+
+
 
 def load_tables(conn):
     """
@@ -155,7 +178,35 @@ def run():
             output = "(Statement executed successfully)"
 
     except Exception as e:
-        output = f"ERROR:\n{e}"
+        err = str(e)
+
+        # Find approximate error location
+        token = None
+        if "near" in err:
+            try:
+                token = err.split("near")[1].split(":")[0].strip().strip('"')
+            except:
+                pass
+
+        # Find line containing token
+        error_line_num = None
+        if token:
+            for i, line in enumerate(sql_no_comments.splitlines(), start=1):
+                if token in line:
+                    error_line_num = i
+                    break
+
+        # Build readable error message
+        formatted = ["ERROR:"]
+        formatted.append(err)
+
+        if error_line_num:
+            formatted.append(f"\nAt line {error_line_num}:")
+            formatted.append(sql_no_comments.splitlines()[error_line_num - 1])
+            formatted.append(" " * (sql_no_comments.splitlines()[error_line_num - 1].find(token)) + "^")
+
+        output = "\n".join(formatted)
+
 
     # Export updated tables → CSV, delete dropped ones
     export_all_tables(conn)
