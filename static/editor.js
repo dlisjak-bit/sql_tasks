@@ -55,6 +55,12 @@ window.uploadFiles = async function () {
     alert("Uploaded!");
 };
 
+window.autoGrow = function (el) {
+    el.style.height = "auto";            // collapse first
+    el.style.height = (el.scrollHeight) + "px"; // expand to content
+};
+
+
 
 window.runLLM = async function () {
     let fd = new FormData();

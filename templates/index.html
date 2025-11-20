@@ -98,6 +98,19 @@ The files are stored in sql_tasks/data.</h5>
     </div>
 </section>
 
+        <section>
+            <h4>Prompt Copy (optional)</h4>
+            <h6 style="margin-top:-0.5rem; color:#bbb;">
+                Paste task prompt here to reference it while writing/debugging SQL.
+                <br>(This box is not used for execution.)
+            </h6>
+            <textarea id="promptCopy"
+                    oninput="autoGrow(this)"
+                    style="height:200px; background:#1b1b1b; color:#ccc; 
+                            font-family:monospace; resize:none; overflow:hidden;">
+            </textarea>
+
+        </section>
 
         <section>
             <h4>Raw LLM JSON</h4>
@@ -105,6 +118,7 @@ The files are stored in sql_tasks/data.</h5>
             <textarea id="raw"></textarea>
             <button onclick="runLLM()">Run LLM SQL</button>
         </section>
+
 
         <!-- <section>
             <h4>Golden Response SQL</h4>
